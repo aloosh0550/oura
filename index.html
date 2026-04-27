@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>علي OS — لوحة القيادة الذكية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   RESET & ROOT
+══════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0d12; --card:#13131a; --card2:#1a1a26;
+  --border:#1e1e2e; --border2:#2a2a3a;
+  --text:#e5e7eb; --muted:#6b7280; --muted2:#4b5563;
+  --ac:#a78bfa; --ac2:#7c3aed; --ac-dim:#a78bfa22;
+  --green:#34d399; --yellow:#fbbf24; --red:#f87171; --blue:#60a5fa; --pink:#f472b6;
+  --green-dim:#34d39922; --yellow-dim:#fbbf2422; --red-dim:#f8717122; --blue-dim:#60a5fa22;
+}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;overflow:hidden;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--card2);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--ac);}
+
+/* ══════════════════════════════════════════════
+   TOPNAV
+══════════════════════════════════════════════ */
+#topnav{
+  height:58px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;background:var(--card);border-bottom:1px solid var(--border);
+  position:fixed;top:0;left:0;right:0;z-index:100;
+}
+.logo{font-size:21px;font-weight:900;color:#fff;letter-spacing:-0.5px;}
+.logo em{color:var(--ac);font-style:normal;}
+.nav-pills{display:flex;background:var(--card2);border-radius:50px;padding:4px;gap:2px;}
+.npill{padding:6px 18px;border-radius:50px;border:none;background:transparent;
+  color:var(--muted);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;transition:all .2s;}
+.npill.active{background:#fff;color:#0d0d12;}
+.npill:hover:not(.active){color:#fff;}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);
+  background:var(--card2);color:var(--muted);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.icon-btn:hover{border-color:var(--ac);color:var(--ac);}
+.mode-sw{display:flex;background:var(--card2);border-radius:50px;padding:3px;gap:2px;border:1px solid var(--border);}
+.msw{padding:5px 14px;border:none;border-radius:50px;background:transparent;
+  color:var(--muted);font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;}
+.msw.active{background:var(--ac);color:#fff;}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;}
+.user-info{text-align:right;}
+.user-name{font-size:13px;font-weight:700;color:#fff;}
+.user-sub{font-size:10px;color:var(--muted);}
+
+/* ══════════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════════ */
+#app{margin-top:58px;height:calc(100vh - 58px);display:flex;overflow:hidden;}
+
+/* SIDEBAR */
+#sidebar{
+  width:220px;flex-shrink:0;background:var(--card);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.sidebar-section{padding:16px 12px 8px;border-bottom:1px solid var(--border);}
+.sidebar-label{font-size:9px;font-weight:800;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;padding:0 4px;}
+.snav{width:100%;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;
+  border:none;background:transparent;color:var(--muted);cursor:pointer;font-family:'Cairo',sans-serif;
+  font-size:13px;font-weight:600;text-align:right;transition:all .2s;margin-bottom:2px;}
+.snav .sicon{font-size:16px;flex-shrink:0;}
+.snav:hover{background:var(--card2);color:#fff;}
+.snav.active{background:var(--ac-dim);color:var(--ac);border-right:3px solid var(--ac);}
+.sidebar-stats{padding:12px;}
+.stat-mini{background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.stat-mini-val{font-size:20px;font-weight:900;color:#fff;}
+.stat-mini-lbl{font-size:10px;color:var(--muted);margin-top:1px;}
+.mini-prog{background:var(--border);border-radius:4px;height:4px;margin-top:6px;overflow:hidden;}
+.mini-prog-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.sidebar-footer{padding:12px;margin-top:auto;border-top:1px solid var(--border);}
+.live-badge{display:flex;align-items:center;gap:6px;background:var(--green-dim);border-radius:8px;padding:8px 12px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+
+/* MAIN */
+#main{flex:1;overflow-y:auto;padding:18px;}
+
+/* ══════════════════════════════════════════════
+   PAGES
+══════════════════════════════════════════════ */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ══════════════════════════════════════════════
+   BENTO GRID
+══════════════════════════════════════════════ */
+.bento{display:grid;gap:14px;}
+.bento-3col{grid-template-columns:2fr 1.1fr 2fr;}
+.bento-2col{grid-template-columns:1fr 1fr;}
+.bento-4col{grid-template-columns:repeat(4,1fr);}
+.span2{grid-column:span 2;}
+.span3{grid-column:span 3;}
+
+/* ══════════════════════════════════════════════
+   CARDS
+══════════════════════════════════════════════ */
+.card{background:var(--card);border-radius:18px;padding:18px;border:1px solid var(--border);
+  position:relative;overflow:hidden;animation:fadeUp .35s ease both;}
+.card:hover{border-color:var(--border2);}
+.card-sm{padding:14px;}
+.card-title{font-size:13px;font-weight:800;color:#fff;margin-bottom:2px;}
+.card-sub{font-size:11px;color:var(--muted);}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.big-num{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.1;color:#fff;}
+.big-num-sm{font-size:26px;font-weight:900;letter-spacing:-0.5px;color:#fff;}
+
+/* BADGES */
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;}
+.badge-green{background:#1a3a2a;color:var(--green);}
+.badge-red{background:#3a1a1a;color:var(--red);}
+.badge-yellow{background:#3a2a00;color:var(--yellow);}
+.badge-purple{background:var(--ac-dim);color:var(--ac);}
+.badge-blue{background:var(--blue-dim);color:var(--blue);}
+.badge-ai{background:#2a1a3a;color:var(--ac);font-size:9px;padding:2px 7px;}
+
+/* RANGE PILLS */
+.rpills{display:flex;gap:3px;}
+.rpill{padding:4px 11px;border-radius:20px;border:none;background:transparent;
+  color:var(--muted);font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer;font-weight:700;transition:all .2s;}
+.rpill.active{background:#fff;color:#0d0d12;}
+.rpill:hover:not(.active){color:#fff;}
+
+/* PROGRESS */
+.progress{background:var(--border);border-radius:6px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:6px;transition:width .8s ease;}
+
+/* TASK */
+.task-item{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;background:var(--bg);
+  border-radius:11px;margin-bottom:6px;border:1px solid var(--border);cursor:pointer;transition:border-color .2s;}
+.task-item:hover{border-color:var(--border2);}
+.task-item.done{opacity:.45;}
+.tcheck{width:18px;height:18px;border-radius:5px;border:2px solid var(--border2);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px;}
+.tcheck.done{background:var(--ac);border-color:var(--ac);}
+.ttag{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.priority-h{background:#7f1d1d;color:#fca5a5;}
+.priority-m{background:#451a03;color:var(--yellow);}
+.priority-l{background:#1a2e05;color:var(--green);}
+.type-work{background:#1e1e3a;color:#818cf8;}
+.type-personal{background:#1a2e05;color:var(--green);}
+.type-habit{background:#3a1a2e;color:var(--pink);}
+
+/* INPUT */
+.inp{background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  padding:9px 13px;color:#fff;font-family:'Cairo',sans-serif;font-size:13px;
+  direction:rtl;outline:none;width:100%;transition:border-color .2s;}
+.inp:focus{border-color:var(--ac);}
+.inp::placeholder{color:var(--muted2);}
+select.inp{cursor:pointer;}
+.inp-row{display:flex;gap:7px;margin-top:8px;}
+.btn{border:none;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;border-radius:10px;
+  padding:9px 16px;font-size:13px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn:hover{opacity:.85;}
+.btn-primary{background:var(--ac);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-ghost{background:var(--card2);color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{color:#fff;border-color:var(--border2);}
+.btn-red{background:#7f1d1d;color:#fca5a5;}
+.btn-green{background:#14532d;color:var(--green);}
+.btn-add{background:var(--ac);color:#fff;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;font-size:17px;font-weight:900;}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:7px;}
+.cal-lbl{font-size:9px;color:var(--muted2);text-align:center;font-weight:800;padding:2px 0;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;
+  font-size:11px;font-weight:700;cursor:pointer;position:relative;color:var(--muted);transition:all .15s;}
+.cal-day:hover:not(.today){background:var(--card2);color:#fff;}
+.cal-day.today{background:var(--ac);color:#fff;}
+.cal-day.has-ev::after{content:'';width:4px;height:4px;border-radius:50%;background:var(--ac);
+  position:absolute;bottom:1px;left:50%;transform:translateX(-50%);}
+.cal-day.today::after{background:#fff;}
+.cal-day.other-m{color:var(--muted2);opacity:.4;}
+
+/* CHARTS */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{width:100%;border-radius:6px 6px 0 0;transition:height .6s ease;}
+.bar-lbl{font-size:9px;color:var(--muted2);font-weight:700;}
+
+/* RING */
+.ring-wrap{display:flex;align-items:center;justify-content:center;}
+
+/* TIMER */
+#timer-arc{transition:stroke-dasharray .5s ease;}
+.tbtn{flex:1;border:none;border-radius:10px;padding:9px;font-family:'Cairo',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.tbtn:hover{opacity:.85;}
+
+/* HEATMAP */
+.hmap{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.hcell{aspect-ratio:1;border-radius:4px;cursor:pointer;transition:transform .15s;}
+.hcell:hover{transform:scale(1.25);}
+
+/* MODAL */
+#modal-overlay{position:fixed;inset:0;background:#00000088;z-index:500;display:none;
+  align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+#modal-overlay.open{display:flex;}
+.modal{background:var(--card);border-radius:20px;padding:24px;width:480px;max-width:95vw;
+  border:1px solid var(--border);animation:fadeUp .25s ease;}
+.modal-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:16px;}
+.form-group{margin-bottom:12px;}
+.form-label{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block;}
+
+/* MATRIX */
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.matrix-cell{border-radius:14px;padding:14px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.matrix-cell:hover{transform:translateY(-2px);}
+.matrix-cell-title{font-size:11px;font-weight:800;margin-bottom:8px;}
+
+/* ENERGY */
+.energy-btn{flex:1;border-radius:10px;padding:10px;border:1px solid var(--border);
+  background:var(--card2);cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;
+  font-size:12px;text-align:center;transition:all .2s;}
+.energy-btn.selected{border-color:var(--ac);}
+.energy-btn:hover{border-color:var(--border2);}
+
+/* COUNTRY ROW */
+.crow{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);}
+.crow:last-child{border-bottom:none;}
+
+/* TOOLTIP */
+.tooltip{position:absolute;background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:6px 10px;font-size:11px;font-weight:700;pointer-events:none;z-index:50;white-space:nowrap;}
+
+/* NOTIFICATION */
+#notif{position:fixed;top:70px;left:20px;z-index:999;display:flex;flex-direction:column;gap:8px;}
+.notif-item{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:12px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;
+  animation:slideIn .3s ease;min-width:260px;box-shadow:0 4px 24px #00000066;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px);}to{opacity:1;transform:translateX(0);}}
+
+/* DAILY REVIEW */
+#daily-review{background:linear-gradient(135deg,var(--ac-dim),transparent);border:1px solid var(--ac)44;
+  border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.spinning{animation:spin 1s linear infinite;}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{font-size:10px;color:var(--muted);font-weight:800;text-align:right;
+  padding:8px 12px;border-bottom:1px solid var(--border);letter-spacing:.5px;}
+.data-table td{font-size:12px;padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--card2);}
+
+/* SCORE CARD */
+.score-ring{position:relative;display:inline-flex;align-items:center;justify-content:center;}
+.score-inner{position:absolute;text-align:center;}
+
+/* DISTRACTION */
+.dis-btn{background:var(--red-dim);border:1px solid var(--red)44;color:var(--red);
+  border-radius:10px;padding:6px 14px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;border-bottom:3px solid var(--red)44;transition:all .2s;}
+.dis-btn:hover{background:var(--red)22;}
+
+/* WEEKLY REPORT */
+.report-section{background:var(--card2);border-radius:12px;padding:14px;margin-bottom:10px;}
+.report-title{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE UTILS
+══════════════════════════════════════════════ */
+@media(max-width:1100px){
+  .bento-3col{grid-template-columns:1fr 1fr;}
+  .span2,.span3{grid-column:span 1;}
+}
+@media(max-width:800px){
+  #sidebar{display:none;}
+  .bento-3col,.bento-2col,.bento-4col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════ TOPNAV ════════════════════════════ -->
+<div id="topnav">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="logo">عـلي<em>OS</em></div>
+    <div class="mode-sw">
+      <button class="msw active" id="msw-p" onclick="setMode(false)">🌿 شخصي</button>
+      <button class="msw" id="msw-c" onclick="setMode(true)">💼 تجاري</button>
+    </div>
+  </div>
+  <div class="nav-pills">
+    <button class="npill active" onclick="gotoPage('overview',this)">نظرة عامة</button>
+    <button class="npill" onclick="gotoPage('tasks',this)">المهام</button>
+    <button class="npill" onclick="gotoPage('projects',this)">المشاريع</button>
+    <button class="npill" onclick="gotoPage('finance',this)">المالية</button>
+    <button class="npill" onclick="gotoPage('habits',this)">العادات</button>
+    <button class="npill" onclick="gotoPage('report',this)">التقرير</button>
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" id="privacy-btn" onclick="togglePrivacy()" title="الخصوصية">👁</button>
+    <button class="icon-btn" onclick="openModal('add-task')" title="مهمة جديدة">+</button>
+    <button class="icon-btn" onclick="generateReport()" title="تقرير AI" id="ai-btn">✨</button>
+    <div style="display:flex;align-items:center;gap:7px;margin-right:4px;">
+      <div>
+        <div class="user-name">علي</div>
+        <div class="user-sub">مطور وريادي</div>
+      </div>
+      <div class="avatar">ع</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ APP ════════════════════════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">التنقل</div>
+      <button class="snav active" id="snav-overview" onclick="gotoPage('overview',this,true)"><span class="sicon">🏠</span> نظرة عامة</button>
+      <button class="snav" id="snav-tasks" onclick="gotoPage('tasks',this,true)"><span class="sicon">✅</span> المهام</button>
+      <button class="snav" id="snav-projects" onclick="gotoPage('projects',this,true)"><span class="sicon">🚀</span> المشاريع</button>
+      <button class="snav" id="snav-finance" onclick="gotoPage('finance',this,true)"><span class="sicon">💰</span> المالية</button>
+      <button class="snav" id="snav-habits" onclick="gotoPage('habits',this,true)"><span class="sicon">🔥</span> العادات</button>
+      <button class="snav" id="snav-report" onclick="gotoPage('report',this,true)"><span class="sicon">📊</span> التقرير</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">مؤقت التركيز</div>
+      <div style="text-align:center;padding:8px 0;">
+        <div style="font-size:32px;font-weight:900;color:#fff;" id="sb-timer">25:00</div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:8px;" id="sb-timer-lbl">تركيز عميق</div>
+        <div style="display:flex;gap:5px;">
+          <button class="tbtn" id="sb-start-btn" onclick="toggleTimer()" style="background:var(--ac);color:#fff;flex:2;">▶</button>
+          <button class="tbtn" onclick="resetTimer()" style="background:var(--card2);color:var(--muted);">↺</button>
+          <button class="tbtn" onclick="switchTimerMode()" style="background:var(--card2);color:var(--muted);font-size:10px;" id="sb-mode-btn">راحة</button>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-stats">
+      <div class="sidebar-label">ملخص سريع</div>
+      <div class="stat-mini" id="sb-tasks-stat">
+        <div class="stat-mini-lbl">المهام اليوم</div>
+        <div class="stat-mini-val" id="sb-tasks-val">0/0</div>
+        <div class="mini-prog"><div class="mini-prog-fill" id="sb-tasks-bar" style="background:var(--ac);width:0%;"></div></div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-lbl">مشاريع نشطة</div>
+        <div class="stat-mini-val" id="sb-proj-val">4</div>
+        <div class="mini-prog"><div class="mini-prog-fill" id="sb-proj-bar" style="background:var(--yellow);width:60%;"></div></div>
+      </div>
+      <div class="stat-mini" id="sb-energy-stat">
+        <div class="stat-mini-lbl">مستوى الطاقة</div>
+        <div class="stat-mini-val" id="sb-energy-val">🟡 متوسط</div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <span style="font-size:11px;font-weight:700;color:var(--green);">نظام نشط</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- ════ NOTIFICATIONS ════ -->
+    <div id="notif"></div>
+
+    <!-- ════════════════════════ PAGE: OVERVIEW ════════════════════════ -->
+    <div class="page active" id="page-overview">
+      <!-- Daily Review AI -->
+      <div id="daily-review">
+        <div style="font-size:28px;">🧠</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:12px;font-weight:800;color:var(--ac);">المراجعة اليومية الذكية</span>
+            <span class="badge badge-ai">AI ✨</span>
+          </div>
+          <div style="font-size:13px;color:var(--text);line-height:1.7;" id="daily-review-text">
+            مساء الخير يا علي! اليوم الخميس — لديك 3 مهام معلقة من أمس، أبرزها مراجعة كود API. مشروعك الرئيسي يحتاج دفعة اليوم لتجنب التأخر. مستوى طاقتك المسجّل متوسط، اقتراح: ابدأ بمهام الكود 2 ساعة أولى ثم الاجتماعات.
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="refreshDailyReview()" id="review-refresh-btn">🔄 تحديث</button>
+      </div>
+
+      <!-- Row 1: 3 col -->
+      <div class="bento bento-3col" style="margin-bottom:14px;">
+        <!-- Sparkline Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="ov-c1-title">الإنجاز الأسبوعي</div>
+              <div class="card-sub" id="ov-c1-sub">هذا الأسبوع</div>
+            </div>
+            <div class="rpills">
+              <button class="rpill" onclick="setRange(this)">اليوم</button>
+              <button class="rpill active" onclick="setRange(this)">أسبوع</button>
+              <button class="rpill" onclick="setRange(this)">شهر</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:24px;margin-bottom:14px;">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="big-num" id="ov-num1">—</span>
+                <span class="badge badge-green" id="ov-badge1">↑ 2.4%</span>
+              </div>
+              <div class="card-sub" id="ov-lbl1">مهام مكتملة</div>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="big-num" style="font-size:26px;" id="ov-num2">—</span>
+                <span class="badge badge-yellow" id="ov-badge2">↑ 4.7%</span>
+              </div>
+              <div class="card-sub" id="ov-lbl2">مشاريع نشطة</div>
+            </div>
+          </div>
+          <svg id="sparkline" width="100%" height="90" viewBox="0 0 340 90" preserveAspectRatio="none" style="overflow:visible;">
+            <defs>
+              <linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a78bfa" stop-opacity=".35"/>
+                <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fbbf24" stop-opacity=".25"/>
+                <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path id="sp-fill1" fill="url(#sg1)"/>
+            <path id="sp-fill2" fill="url(#sg2)"/>
+            <path id="sp-line1" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+            <path id="sp-line2" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round" stroke-dasharray="5,3"/>
+            <line id="sp-vl" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle id="sp-dot" r="5" fill="#a78bfa" stroke="#13131a" stroke-width="2"/>
+            <text id="sp-tip" font-size="10" fill="#a78bfa" font-family="Cairo,sans-serif" font-weight="800" text-anchor="middle"/>
+          </svg>
+        </div>
+
+        <!-- Calendar -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" id="cal-title">أبريل 2026</div>
+            <div style="display:flex;gap:4px;">
+              <button class="icon-btn" style="width:26px;height:26px;font-size:12px;" onclick="changeMonth(-1)">‹</button>
+              <button class="icon-btn" style="width:26px;height:26px;font-size:12px;" onclick="changeMonth(1)">›</button>
+            </div>
+          </div>
+          <div class="cal-grid" id="cal-header">
+            <div class="cal-lbl">أح</div><div class="cal-lbl">إث</div><div class="cal-lbl">ث</div>
+            <div class="cal-lbl">أر</div><div class="cal-lbl">خ</div><div class="cal-lbl">ج</div><div class="cal-lbl">س</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div style="background:var(--card2);border-radius:12px;padding:11px 14px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div class="card-sub">أحداث مجدولة</div>
+              <div style="font-size:20px;font-weight:900;color:#fff;" id="cal-count">0</div>
+            </div>
+            <button class="btn btn-sm" style="background:var(--ac-dim);color:var(--ac);border:1px solid var(--ac)44;" onclick="openModal('add-event')">+ حدث</button>
+          </div>
+        </div>
+
+        <!-- Bar Chart: Projects/Revenue -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="ov-bar-title">تقدم المشاريع</div>
+              <div class="card-sub"><span class="live-dot" style="display:inline-block;"></span> <span id="ov-bar-sub">مباشر</span></div>
+            </div>
+            <div style="display:flex;gap:6px;" id="plat-badges">
+              <div class="badge badge-purple" id="plat1"><span id="plat1-val">8</span> مكتملة</div>
+              <div class="badge badge-yellow" id="plat2"><span id="plat2-val">5</span> جارية</div>
+            </div>
+          </div>
+          <div class="bar-chart" style="height:100px;" id="main-bar-chart"></div>
+          <div style="display:flex;gap:12px;margin-top:8px;" id="bar-legend"></div>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="bento bento-3col">
+        <!-- Quick Tasks -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" id="ov-tasks-title">أبرز المهام</div>
+            <div style="display:flex;gap:5px;">
+              <button class="btn btn-ghost btn-sm" onclick="gotoPage('tasks',null)">عرض الكل</button>
+              <button class="btn btn-sm btn-primary" onclick="openModal('add-task')">+ مهمة</button>
+            </div>
+          </div>
+          <div id="ov-task-list"></div>
+        </div>
+
+        <!-- Eisenhower Matrix -->
+        <div class="card" style="grid-row:span 1;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">مصفوفة الأولويات</div>
+              <div class="card-sub">Eisenhower Matrix</div>
+            </div>
+            <span class="badge badge-ai">AI</span>
+          </div>
+          <div class="matrix" id="matrix-grid" style="gap:7px;"></div>
+        </div>
+
+        <!-- Health Score + Habits -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">الصحة الشاملة</div>
+            <span class="badge badge-ai">AI ✨</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+            <div class="score-ring">
+              <svg width="90" height="90" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r="36" fill="none" stroke="var(--border)" stroke-width="9"/>
+                <circle cx="45" cy="45" r="36" fill="none" stroke="var(--ac)" stroke-width="9"
+                  stroke-linecap="round" stroke-dasharray="0 226.2" transform="rotate(-90 45 45)" id="health-arc"
+                  style="transition:stroke-dasharray .8s ease;"/>
+              </svg>
+              <div class="score-inner">
+                <div style="font-size:20px;font-weight:900;color:#fff;" id="health-score-num">72</div>
+                <div style="font-size:9px;color:var(--muted);">/ 100</div>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:16px;font-weight:800;margin-bottom:2px;" id="health-level">جيد</div>
+              <div class="card-sub">مبني على 4 عوامل</div>
+              <div style="margin-top:8px;" id="health-factors"></div>
+            </div>
+          </div>
+          <!-- Heatmap -->
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between;">
+            <span>نشاط الأسبوع</span>
+            <span id="hmap-total">0h</span>
+          </div>
+          <div class="hmap" id="heatmap"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:3px;">
+            <span style="font-size:9px;color:var(--muted2);">أح</span><span style="font-size:9px;color:var(--muted2);">إث</span><span style="font-size:9px;color:var(--muted2);">ث</span><span style="font-size:9px;color:var(--muted2);">أر</span><span style="font-size:9px;color:var(--muted2);">خ</span><span style="font-size:9px;color:var(--muted2);">ج</span><span style="font-size:9px;color:var(--muted2);">س</span>
+          </div>
+        </div>
+      </div>
+    </div><!-- /overview -->
+
+    <!-- ════════════════════════ PAGE: TASKS ════════════════════════ -->
+    <div class="page" id="page-tasks">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:20px;font-weight:900;" id="tasks-page-title">المهام اليومية</h2>
+          <div class="card-sub" id="tasks-page-sub">إدارة مهامك الشخصية والمهنية</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="openModal('energy')">⚡ مستوى الطاقة</button>
+          <button class="btn btn-primary" onclick="openModal('add-task')">+ مهمة جديدة</button>
+        </div>
+      </div>
+      <!-- Energy Banner -->
+      <div id="energy-banner" style="margin-bottom:14px;"></div>
+      <!-- Filters -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+        <button class="btn btn-sm" id="tf-all" onclick="setTaskFilter('all',this)" style="background:var(--ac);color:#fff;">الكل</button>
+        <button class="btn btn-sm btn-ghost" id="tf-work" onclick="setTaskFilter('work',this)">💼 عمل</button>
+        <button class="btn btn-sm btn-ghost" id="tf-personal" onclick="setTaskFilter('personal',this)">🎯 شخصي</button>
+        <button class="btn btn-sm btn-ghost" id="tf-habit" onclick="setTaskFilter('habit',this)">🔥 عادة</button>
+        <button class="btn btn-sm btn-ghost" id="tf-high" onclick="setTaskFilter('high',this)">🔴 عالي</button>
+        <button class="btn btn-sm btn-ghost" id="tf-done" onclick="setTaskFilter('done',this)">✅ مكتملة</button>
+      </div>
+      <!-- Task columns: Eisenhower -->
+      <div class="bento bento-2col" style="margin-bottom:14px;">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title" id="tasks-col1-title">المهام المعلقة</div><div class="card-sub" id="tasks-col1-count">0 مهام</div></div>
+            <div class="rpills">
+              <button class="rpill active" onclick="setRange(this)">اليوم</button>
+              <button class="rpill" onclick="setRange(this)">الأسبوع</button>
+            </div>
+          </div>
+          <div id="tasks-pending-list"></div>
+          <div class="inp-row">
+            <input class="inp" id="quick-task-inp" placeholder="مهمة سريعة..." onkeydown="if(event.key==='Enter')quickAddTask()">
+            <button class="btn-add" onclick="quickAddTask()">+</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">المهام المكتملة</div><div class="card-sub" id="tasks-col2-count">0 مهام</div></div>
+          </div>
+          <div id="tasks-done-list"></div>
+        </div>
+      </div>
+      <!-- Distraction counter -->
+      <div class="card card-sm">
+        <div class="card-header">
+          <div>
+            <div class="card-title">قاطع التشتيت</div>
+            <div class="card-sub">سجّل كل مرة تنقطع فيها عن العمل</div>
+          </div>
+          <span class="badge badge-ai">AI ✨</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:36px;font-weight:900;color:var(--red);" id="distraction-count">0</div>
+            <div class="card-sub">انقطاع اليوم</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text);margin-bottom:8px;" id="distraction-msg">أداء ممتاز! لم تنقطع اليوم 🎯</div>
+            <div style="display:flex;gap:7px;">
+              <button class="dis-btn" onclick="addDistraction()">+ تسجيل انقطاع</button>
+              <button class="btn btn-ghost btn-sm" onclick="resetDistraction()">إعادة</button>
+            </div>
+          </div>
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">متوسط الأسبوع</div>
+            <div style="font-size:18px;font-weight:900;color:var(--yellow);" id="distraction-avg">2.4</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tasks -->
+
+    <!-- ════════════════════════ PAGE: PROJECTS ════════════════════════ -->
+    <div class="page" id="page-projects">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:20px;font-weight:900;">المشاريع</h2>
+          <div class="card-sub">تتبع مشاريعك وربط الإيرادات بالإنجاز</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('add-project')">+ مشروع جديد</button>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="bento bento-4col" style="margin-bottom:14px;">
+        <div class="card card-sm" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:4px;">🚀</div>
+          <div class="big-num" id="proj-kpi1">4</div>
+          <div class="card-sub">مشاريع نشطة</div>
+        </div>
+        <div class="card card-sm" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:4px;">⏳</div>
+          <div class="big-num" id="proj-kpi2" style="color:var(--yellow);">1</div>
+          <div class="card-sub">في خطر تأخر</div>
+        </div>
+        <div class="card card-sm" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:4px;">💰</div>
+          <div class="big-num" id="proj-kpi3" style="color:var(--green);">—</div>
+          <div class="card-sub">إيراد متوقع</div>
+        </div>
+        <div class="card card-sm" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:4px;">✅</div>
+          <div class="big-num" id="proj-kpi4" style="color:var(--ac);">—</div>
+          <div class="card-sub">الإيراد المحقق</div>
+        </div>
+      </div>
+
+      <!-- Projects List -->
+      <div id="projects-list"></div>
+
+      <!-- Revenue vs Completion -->
+      <div class="card" style="margin-top:14px;">
+        <div class="card-header">
+          <div class="card-title">الإيراد المتوقع مقابل المحقق</div>
+          <span class="badge badge-ai">AI تحليل</span>
+        </div>
+        <div id="proj-rev-bars" style="margin-top:8px;"></div>
+      </div>
+    </div><!-- /projects -->
+
+    <!-- ════════════════════════ PAGE: FINANCE ════════════════════════ -->
+    <div class="page" id="page-finance">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:20px;font-weight:900;">المالية</h2>
+          <div class="card-sub">إدارة الديون والإيرادات والمصاريف</div>
+        </div>
+        <div style="display:flex;gap:7px;">
+          <div class="mode-sw">
+            <button class="msw active" id="curr-sar" onclick="setCurrency('SAR',this)">SAR</button>
+            <button class="msw" id="curr-usd" onclick="setCurrency('USD',this)">USD</button>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('add-debt')">+ إضافة</button>
+        </div>
+      </div>
+      <div class="bento bento-3col" style="margin-bottom:14px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">الديون</div><span class="badge badge-red" id="debt-pct-badge">0%</span></div>
+          <div class="big-num" id="debt-total-num" style="color:var(--red);margin-bottom:4px;">0</div>
+          <div class="card-sub" style="margin-bottom:10px;">إجمالي الديون</div>
+          <div class="progress" style="height:9px;margin-bottom:12px;"><div class="progress-fill" id="debt-main-bar" style="background:var(--ac);width:0%;"></div></div>
+          <div id="debts-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">الإيرادات</div><span class="badge badge-green">↑ هذا الشهر</span></div>
+          <div class="big-num" id="fin-rev" style="color:var(--green);margin-bottom:14px;">0</div>
+          <div id="fin-rev-bars" style="height:80px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">المصاريف</div><span class="badge badge-yellow">هذا الشهر</span></div>
+          <div class="big-num" id="fin-exp" style="color:var(--yellow);margin-bottom:14px;">0</div>
+          <div id="fin-exp-bars" style="height:80px;"></div>
+        </div>
+      </div>
+      <!-- Finance Table -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">سجل المعاملات</div>
+          <button class="btn btn-sm btn-ghost" onclick="openModal('add-transaction')">+ معاملة</button>
+        </div>
+        <table class="data-table"><thead><tr>
+          <th>النوع</th><th>الوصف</th><th>المبلغ</th><th>التاريخ</th><th></th>
+        </tr></thead>
+        <tbody id="fin-table-body"></tbody></table>
+      </div>
+    </div><!-- /finance -->
+
+    <!-- ════════════════════════ PAGE: HABITS ════════════════════════ -->
+    <div class="page" id="page-habits">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:20px;font-weight:900;">العادات والصحة</h2>
+          <div class="card-sub">تتبع عاداتك اليومية لتحسين جودة حياتك</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('add-habit')">+ عادة جديدة</button>
+      </div>
+      <!-- Sleep tracker -->
+      <div class="bento bento-3col" style="margin-bottom:14px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">نمط النوم والإنتاجية</div><span class="badge badge-ai">AI ✨</span></div>
+          <div style="display:flex;gap:14px;margin-bottom:12px;">
+            <div>
+              <div class="card-sub">ساعات النوم</div>
+              <div class="big-num" id="sleep-hours">7.5</div>
+            </div>
+            <div style="flex:1;align-self:flex-end;">
+              <div class="card-sub" style="margin-bottom:4px;">جودة النوم</div>
+              <div class="progress" style="height:8px;"><div class="progress-fill" id="sleep-quality-bar" style="background:var(--blue);width:75%;"></div></div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text);background:var(--card2);border-radius:10px;padding:10px;" id="sleep-insight">
+            💡 تحقق أفضل إنتاجية عندما تنام بين 10:30م و6:30ص. ننصح بالنوم مبكراً الليلة.
+          </div>
+          <div style="margin-top:10px;">
+            <div class="form-label">سجّل نومك الليلة</div>
+            <div class="inp-row">
+              <input class="inp" type="number" id="sleep-inp" placeholder="ساعات النوم" min="0" max="12" step="0.5" style="width:120px;">
+              <button class="btn btn-primary btn-sm" onclick="logSleep()">سجّل</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">مؤشر الصحة الشاملة</div><span class="badge badge-ai">AI</span></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div class="score-ring">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="8"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="var(--ac)" stroke-width="8"
+                  stroke-linecap="round" stroke-dasharray="0 201.1" transform="rotate(-90 40 40)" id="h2-arc"
+                  style="transition:stroke-dasharray .8s ease;"/>
+              </svg>
+              <div class="score-inner">
+                <div style="font-size:18px;font-weight:900;color:#fff;" id="h2-score">72</div>
+              </div>
+            </div>
+            <div id="h2-breakdown" style="flex:1;"></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);background:var(--card2);border-radius:10px;padding:10px;" id="h2-tip">
+            ركّز على تحسين ساعات نومك هذا الأسبوع لرفع النقاط.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">الأسبوع الحالي</div></div>
+          <div id="habits-week-grid"></div>
+        </div>
+      </div>
+      <!-- Habits Grid -->
+      <div class="bento bento-4col" id="habits-rings-grid"></div>
+    </div><!-- /habits -->
+
+    <!-- ════════════════════════ PAGE: REPORT ════════════════════════ -->
+    <div class="page" id="page-report">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:20px;font-weight:900;">تقرير الأسبوع</h2>
+          <div class="card-sub">تقرير ذكي شامل مولّد بالذكاء الاصطناعي</div>
+        </div>
+        <div style="display:flex;gap:7px;">
+          <button class="btn btn-ghost" onclick="exportReport()">📥 تصدير</button>
+          <button class="btn btn-primary" onclick="generateReport()" id="gen-report-btn">✨ توليد تقرير AI</button>
+        </div>
+      </div>
+      <div id="report-content">
+        <div class="card" style="text-align:center;padding:40px;">
+          <div style="font-size:48px;margin-bottom:12px;">📊</div>
+          <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">التقرير جاهز للتوليد</div>
+          <div class="card-sub" style="margin-bottom:16px;">اضغط "توليد تقرير AI" للحصول على تحليل شامل لأدائك الأسبوعي</div>
+          <button class="btn btn-primary" onclick="generateReport()">✨ توليد التقرير الآن</button>
+        </div>
+      </div>
+    </div><!-- /report -->
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ════════════════════════ MODALS ════════════════════════ -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════ SCRIPTS ════════════════════════ -->
+<script>
+/* ════════════════════════════════════════════════
+   STATE & STORAGE
+════════════════════════════════════════════════ */
+const SK = "ali_os_full_v1";
+const MONTHS = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const TODAY = new Date();
+
+const DEF = {
+  isCommercial: false,
+  privacy: false,
+  currency: "SAR",
+  energy: "medium", // high / medium / low
+  calYear: 2026, calMonth: 3,
+  events: {15:["اجتماع API"],18:["عرض المشروع"],22:["موعد العميل"],27:["مراجعة كود"]},
+  tasks: [
+    {id:1,text:"مراجعة كود API الدفع",done:false,type:"work",priority:"high",project:1,deadline:"2026-04-28"},
+    {id:2,text:"اجتماع مع فريق التصميم",done:false,type:"work",priority:"high",project:1,deadline:"2026-04-27"},
+    {id:3,text:"كتابة مقال تقني عن Flutter",done:true,type:"personal",priority:"medium",project:null,deadline:""},
+    {id:4,text:"التمرين اليومي - 30 دقيقة",done:true,type:"habit",priority:"medium",project:null,deadline:""},
+    {id:5,text:"مراجعة مصاريف الشهر",done:false,type:"personal",priority:"low",project:null,deadline:"2026-04-30"},
+    {id:6,text:"تحديث وثائق المشروع",done:false,type:"work",priority:"medium",project:2,deadline:""},
+    {id:7,text:"قراءة كتاب - 30 دقيقة",done:false,type:"habit",priority:"low",project:null,deadline:""},
+  ],
+  taskFilter: "all",
+  projects: [
+    {id:1,name:"نظام الدعوات الرقمية",color:"#a78bfa",pct:78,revenue:50000,deadline:"2026-06-01",status:"active",desc:"منصة دعوات ذكية للسوق العربي"},
+    {id:2,name:"API المدفوعات",color:"#fbbf24",pct:45,revenue:25000,deadline:"2026-05-15",status:"risk",desc:"بوابة دفع متكاملة"},
+    {id:3,name:"تطبيق الجوال",color:"#34d399",pct:22,revenue:40000,deadline:"2026-08-01",status:"active",desc:"تطبيق Flutter للعملاء"},
+    {id:4,name:"لوحة الإدارة",color:"#f472b6",pct:91,revenue:15000,deadline:"2026-04-30",status:"active",desc:"واجهة إدارة المحتوى"},
+  ],
+  habits: [
+    {id:1,label:"التمرين",color:"#a78bfa",val:70,target:100,unit:"دقيقة",history:[1,1,0,1,1,0,1]},
+    {id:2,label:"القراءة",color:"#34d399",val:55,target:30,unit:"دقيقة",history:[1,0,1,1,0,1,0]},
+    {id:3,label:"الكود",color:"#fbbf24",val:90,target:120,unit:"دقيقة",history:[1,1,1,1,0,1,1]},
+    {id:4,label:"النوم",color:"#60a5fa",val:75,target:8,unit:"ساعة",history:[1,1,0,0,1,1,1]},
+    {id:5,label:"الماء",color:"#f472b6",val:60,target:8,unit:"أكواب",history:[1,0,1,1,0,0,1]},
+    {id:6,label:"التأمل",color:"#fb923c",val:40,target:15,unit:"دقيقة",history:[0,1,0,1,0,0,1]},
+  ],
+  debts: [
+    {id:1,label:"قرض السيارة",total:45000,paid:28000,color:"#a78bfa"},
+    {id:2,label:"قرض شخصي",total:15000,paid:9500,color:"#fbbf24"},
+  ],
+  transactions: [
+    {id:1,type:"income",desc:"مشروع نظام الدعوات",amount:15000,date:"2026-04-20"},
+    {id:2,type:"expense",desc:"سيرفرات AWS",amount:800,date:"2026-04-18"},
+    {id:3,type:"income",desc:"استشارة تقنية",amount:3500,date:"2026-04-15"},
+    {id:4,type:"expense",desc:"اشتراكات برمجية",amount:450,date:"2026-04-10"},
+  ],
+  revHistory:[48000,52000,61000,58000,71000,79000],
+  expHistory:[32000,35000,41000,38000,45000,51000],
+  heatmap:[2,4,1,3,5,2,0],
+  sleepLog:[7,8,6.5,7.5,8,6,7.5],
+  distraction:{today:0,week:[3,2,4,1,0,5,2]},
+  sparkData:[42,38,55,48,62,57,71,65,79,72,85,78,92,88,95],
+  sparkData2:[30,35,28,40,38,45,42,50,55,48,60,65,58,70,75],
+  timerSec:25*60,timerMode:"focus",
+};
+
+let S = (() => {
+  try { const raw=localStorage.getItem(SK); if(raw) return {...DEF,...JSON.parse(raw)}; } catch{}
+  return {...DEF};
+})();
+function save() { try{localStorage.setItem(SK,JSON.stringify(S));}catch{} }
+
+let timerRunning=false, timerInterval=null;
+
+/* ════════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const AC = () => S.isCommercial ? "#d4af37" : "#a78bfa";
+const CURRFMT = (n) => {
+  if(S.privacy) return "●●●";
+  const v = S.currency==="USD" ? Math.round(n*0.267) : n;
+  const sym = S.currency==="USD" ? "$" : "ر.س";
+  return v.toLocaleString("ar-SA") + " " + sym;
+};
+const NUMFMT = n => S.privacy ? "●●●" : (typeof n==="number" ? n.toLocaleString("ar-SA") : n);
+function setRange(btn) {
+  const p = btn.closest(".rpills")||btn.parentElement;
+  p.querySelectorAll(".rpill").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+/* ════════════════════════════════════════════════
+   NOTIFICATIONS
+════════════════════════════════════════════════ */
+function notify(msg, type="purple", icon="✨") {
+  const colors={purple:["#a78bfa22","#a78bfa"],green:["#34d39922","#34d399"],red:["#f8717122","#f87171"],yellow:["#fbbf2422","#fbbf24"]};
+  const [bg,col]=colors[type]||colors.purple;
+  const el=document.createElement("div");
+  el.className="notif-item";
+  el.style.borderColor=col; el.style.background=`var(--card)`;
+  el.innerHTML=`<span style="font-size:18px;">${icon}</span><span>${msg}</span>`;
+  $("notif").appendChild(el);
+  setTimeout(()=>el.style.opacity="0",3500);
+  setTimeout(()=>el.remove(),4000);
+}
+
+/* ════════════════════════════════════════════════
+   MODE / PRIVACY
+════════════════════════════════════════════════ */
+function setMode(ic) {
+  S.isCommercial=ic; save();
+  $("msw-p").className="msw"+(ic?"":" active");
+  $("msw-c").className="msw"+(ic?" active":"");
+  renderAll();
+  notify(ic?"تم التبديل للوضع التجاري 💼":"تم التبديل للوضع الشخصي 🌿","purple");
+}
+function togglePrivacy(){
+  S.privacy=!S.privacy; save();
+  $("privacy-btn").textContent=S.privacy?"🙈":"👁";
+  renderAll();
+}
+function setCurrency(c,btn){
+  S.currency=c; save();
+  $("curr-sar").className="msw"+(c==="SAR"?" active":"");
+  $("curr-usd").className="msw"+(c==="USD"?" active":"");
+  renderFinance();
+}
+
+/* ════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════ */
+function gotoPage(page, btn, isSidebar=false) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".npill").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".snav").forEach(b=>b.classList.remove("active"));
+  $("page-"+page).classList.add("active");
+  if(btn) btn.classList.add("active");
+  const sid=$("snav-"+page); if(sid)sid.classList.add("active");
+  const nav=document.querySelector(`.npill[onclick*="'${page}'"]`); if(nav)nav.classList.add("active");
+  renderPage(page);
+}
+function renderPage(p){
+  if(p==="overview") renderOverview();
+  else if(p==="tasks") renderTasks();
+  else if(p==="projects") renderProjects();
+  else if(p==="finance") renderFinance();
+  else if(p==="habits") renderHabits();
+  else if(p==="report") {/* keep as is */}
+}
+function renderAll(){
+  const active=document.querySelector(".page.active");
+  if(active) renderPage(active.id.replace("page-",""));
+  renderSidebar();
+}
+
+/* ════════════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════════════ */
+function renderSidebar(){
+  const done=S.tasks.filter(t=>t.done).length, total=S.tasks.length;
+  $("sb-tasks-val").textContent=`${NUMFMT(done)}/${NUMFMT(total)}`;
+  $("sb-tasks-bar").style.width=(total?Math.round(done/total*100):0)+"%";
+  const projRev=S.projects.reduce((s,p)=>s+Math.round(p.revenue*(p.pct/100)),0);
+  $("sb-proj-val").textContent=NUMFMT(S.projects.length);
+  const energyLabels={high:"🟢 عالية",medium:"🟡 متوسط",low:"🔴 منخفضة"};
+  $("sb-energy-val").textContent=energyLabels[S.energy];
+  updateTimerUI();
+}
+
+/* ════════════════════════════════════════════════
+   SPARKLINE
+════════════════════════════════════════════════ */
+function drawSparkline(){
+  const d1=S.sparkData,d2=S.sparkData2,W=340,H=90,pad=8,n=d1.length;
+  const max=Math.max(...d1,...d2,1),min=Math.min(...d1,...d2);
+  const xS=(W-pad*2)/(n-1);
+  const yF=(v)=>pad+(1-(v-min)/(max-min||1))*(H-pad*2);
+  const pts1=d1.map((v,i)=>`${pad+i*xS},${yF(v)}`);
+  const pts2=d2.map((v,i)=>`${pad+i*xS},${yF(v)}`);
+  const last=n-1,hx=pad+last*xS,hy=yF(d1[last]);
+  $("sp-line1").setAttribute("d","M "+pts1.join(" L "));
+  $("sp-line2").setAttribute("d","M "+pts2.join(" L "));
+  $("sp-fill1").setAttribute("d",`M ${pts1[0]} L ${pts1.join(" L ")} L ${pad+last*xS},${H} L ${pad},${H} Z`);
+  $("sp-fill2").setAttribute("d",`M ${pts2[0]} L ${pts2.join(" L ")} L ${pad+last*xS},${H} L ${pad},${H} Z`);
+  const hi=Math.min(13,last);
+  const hiX=pad+hi*xS,hiY=yF(d1[hi]);
+  $("sp-vl").setAttribute("x1",hiX);$("sp-vl").setAttribute("y1",H);
+  $("sp-vl").setAttribute("x2",hiX);$("sp-vl").setAttribute("y2",hiY);
+  $("sp-dot").setAttribute("cx",hx);$("sp-dot").setAttribute("cy",hy);
+  $("sp-dot").setAttribute("fill",AC());
+  $("sp-tip").setAttribute("x",hiX);$("sp-tip").setAttribute("y",hiY-10);
+  $("sp-tip").textContent=NUMFMT(d1[hi]);
+  $("sp-line1").setAttribute("stroke",AC());
+  $("sp-fill1").setAttribute("fill",`url(#sg1)`);
+}
+
+/* ════════════════════════════════════════════════
+   CALENDAR
+════════════════════════════════════════════════ */
+function buildCal(){
+  const y=S.calYear,m=S.calMonth;
+  $("cal-title").textContent=MONTHS[m]+" "+y;
+  const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  const ty=TODAY.getFullYear(),tm=TODAY.getMonth(),td=TODAY.getDate();
+  let html="";
+  for(let i=0;i<first;i++) html+=`<div></div>`;
+  for(let d=1;d<=days;d++){
+    const cls=["cal-day"];
+    const isToday=(y===ty&&m===tm&&d===td);
+    if(isToday) cls.push("today");
+    if(S.events[d]) cls.push("has-ev");
+    html+=`<div class="${cls.join(" ")}" onclick="calClick(${d})" title="${S.events[d]?S.events[d].join(", "):''}">${d}</div>`;
+  }
+  $("cal-grid").innerHTML=html;
+  $("cal-count").textContent=Object.keys(S.events).length;
+}
+function changeMonth(dir){
+  S.calMonth+=dir;
+  if(S.calMonth<0){S.calMonth=11;S.calYear--;}
+  if(S.calMonth>11){S.calMonth=0;S.calYear++;}
+  save(); buildCal();
+}
+function calClick(d){
+  if(S.events[d]) {
+    if(confirm(`هل تريد حذف الحدث "${S.events[d].join(", ")}"؟`)){delete S.events[d];save();buildCal();}
+  } else openModal("add-event",{day:d});
+}
+
+/* ════════════════════════════════════════════════
+   BAR CHART
+════════════════════════════════════════════════ */
+function drawMainBars(){
+  const ic=S.isCommercial,ac=AC();
+  const DAYS=["أح","إث","ث","أر","خ","ج","س"];
+  let d1,d2,l1,l2;
+  if(ic){
+    d1=[48,52,61,58,71,79,92];d2=[32,35,41,38,45,51,60];l1="إيرادات";l2="مصاريف";
+  } else {
+    const weekTasks=S.tasks;
+    d1=[3,5,4,7,8,6,9];d2=[1,2,1,3,4,2,3];l1="مهام";l2="مشاريع";
+  }
+  const maxV=Math.max(...d1,...d2);
+  const todayIdx=(TODAY.getDay()+1)%7;
+  let html="";
+  for(let i=0;i<7;i++){
+    const h1=Math.round((d1[i]/maxV)*88),h2=Math.round((d2[i]/maxV)*88);
+    const isT=(i===4);
+    html+=`<div class="bar-wrap" style="position:relative;">
+      ${isT?`<div style="position:absolute;top:-18px;font-size:9px;font-weight:800;color:${ac};white-space:nowrap;">${NUMFMT(d1[i])}</div>`:""}
+      <div style="display:flex;gap:3px;align-items:flex-end;height:88px;width:100%;">
+        <div class="bar" style="background:${isT?ac:"#2a2a3a"};height:${h1}px;flex:1;"></div>
+        <div class="bar" style="background:${isT?S.isCommercial?"#f59e0b":"#fbbf24":"#1e1e2e"};height:${h2}px;flex:1;border:1px solid var(--border2);"></div>
+      </div>
+      <div class="bar-lbl" style="color:${isT?ac:"var(--muted2)"};">${DAYS[i]}</div>
+    </div>`;
+  }
+  const barEl=$("main-bar-chart"); if(!barEl) return;
+  barEl.style.gap="6px";barEl.style.height="110px";
+  barEl.innerHTML=html;
+  $("bar-legend").innerHTML=`
+    <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;background:${ac};border-radius:2px;"></div><span style="color:var(--muted);font-size:11px;">${l1}</span></div>
+    <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;background:${ic?"#f59e0b":"#fbbf24"};border-radius:2px;"></div><span style="color:var(--muted);font-size:11px;">${l2}</span></div>`;
+  // badges
+  const done=S.tasks.filter(t=>t.done).length;
+  $("plat1-val").textContent=NUMFMT(ic?"79k":done);
+  $("plat2-val").textContent=NUMFMT(ic?"29k":S.projects.filter(p=>p.status==="active").length);
+  $("ov-bar-title").textContent=ic?"الإيرادات الأسبوعية":"تقدم الأسبوع";
+}
+
+/* ════════════════════════════════════════════════
+   TASKS
+════════════════════════════════════════════════ */
+function taskHTML(t) {
+  const pColors={high:["#7f1d1d","#fca5a5"],medium:["#451a03","#fbbf24"],low:["#1a2e05","#34d399"]};
+  const tColors={work:["#1e1e3a","#818cf8"],personal:["#1a2e05","#34d399"],habit:["#3a1a2e","#f472b6"]};
+  const tLabels={work:"عمل",personal:"شخصي",habit:"عادة"};
+  const [pb,pt]=pColors[t.priority]||pColors.medium;
+  const [tb,tt]=tColors[t.type]||tColors.work;
+  const pLabel={high:"عالي",medium:"متوسط",low:"منخفض"}[t.priority];
+  const proj=S.projects.find(p=>p.id===t.project);
+  return `<div class="task-item ${t.done?"done":""}" id="task-${t.id}">
+    <div class="tcheck ${t.done?"done":""}" onclick="toggleTask(${t.id})" style="border-color:${t.done?AC():"var(--border2)"};background:${t.done?AC():"transparent"};">
+      ${t.done?`<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`:""}
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;color:${t.done?"var(--muted)":"var(--text)"};text-decoration:${t.done?"line-through":"none"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.text}</div>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap;">
+        <span class="ttag priority-${t.priority}">${pLabel}</span>
+        <span class="ttag" style="background:${tb};color:${tt};">${tLabels[t.type]||"عمل"}</span>
+        ${proj?`<span class="ttag" style="background:${proj.color}22;color:${proj.color};">${proj.name}</span>`:""}
+        ${t.deadline?`<span style="font-size:9px;color:var(--muted);">📅 ${t.deadline}</span>`:""}
+      </div>
+    </div>
+    <button onclick="deleteTask(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--muted2);font-size:16px;padding:0;flex-shrink:0;" title="حذف">×</button>
+  </div>`;
+}
+function toggleTask(id){
+  S.tasks=S.tasks.map(t=>t.id===id?{...t,done:!t.done}:t);
+  save();
+  renderOverview();
+  renderTasks();
+  renderSidebar();
+  checkDeadlines();
+}
+function deleteTask(id){
+  S.tasks=S.tasks.filter(t=>t.id!==id);
+  save();renderAll();
+}
+function setTaskFilter(f,btn){
+  S.taskFilter=f;
+  document.querySelectorAll("[id^='tf-']").forEach(b=>{b.style.background="var(--card2)";b.style.color="var(--muted)";b.style.borderColor="var(--border)";});
+  btn.style.background=AC();btn.style.color="#fff";btn.style.borderColor=AC();
+  renderTasks();
+}
+function quickAddTask(){
+  const inp=$("quick-task-inp");
+  if(!inp||!inp.value.trim()) return;
+  const id=Math.max(...S.tasks.map(t=>t.id),0)+1;
+  S.tasks.push({id,text:inp.value.trim(),done:false,type:S.isCommercial?"work":"personal",priority:"medium",project:null,deadline:""});
+  inp.value="";save();renderTasks();renderOverview();renderSidebar();
+  notify("تمت إضافة المهمة ✅","green","✅");
+}
+
+/* ════════════════════════════════════════════════
+   MATRIX (Eisenhower)
+════════════════════════════════════════════════ */
+function renderMatrix(){
+  const quadrants=[
+    {key:"uh",title:"عاجل ومهم",bg:"#7f1d1d22",bc:"#7f1d1d",tc:"#fca5a5",tasks:S.tasks.filter(t=>!t.done&&t.priority==="high")},
+    {key:"nuh",title:"مهم غير عاجل",bg:"#1a2e0522",bc:"#14532d",tc:"#34d399",tasks:S.tasks.filter(t=>!t.done&&t.priority==="medium")},
+    {key:"unl",title:"عاجل غير مهم",bg:"#3a2a0022",bc:"#451a03",tc:"#fbbf24",tasks:S.tasks.filter(t=>!t.done&&t.priority==="low")},
+    {key:"nn",title:"تخلص منه",bg:"#2a2a3a22",bc:"#374151",tc:"#6b7280",tasks:S.tasks.filter(t=>t.done)},
+  ];
+  const el=$("matrix-grid"); if(!el) return;
+  el.innerHTML=quadrants.map(q=>`
+    <div class="matrix-cell" style="background:${q.bg};border-color:${q.bc}44;">
+      <div class="matrix-cell-title" style="color:${q.tc};">${q.title} (${q.tasks.length})</div>
+      ${q.tasks.slice(0,3).map(t=>`<div style="font-size:10px;color:var(--muted);padding:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">• ${t.text}</div>`).join("")}
+      ${q.tasks.length>3?`<div style="font-size:10px;color:${q.tc};margin-top:3px;">+${q.tasks.length-3} أخرى</div>`:""}
+    </div>`).join("");
+}
+
+/* ════════════════════════════════════════════════
+   HEALTH SCORE
+════════════════════════════════════════════════ */
+function calcHealthScore(){
+  const habAvg=S.habits.reduce((s,h)=>s+h.val,0)/S.habits.length;
+  const sleepAvg=S.sleepLog.reduce((a,b)=>a+b,0)/S.sleepLog.length;
+  const sleepScore=Math.min(100,Math.round((sleepAvg/8)*100));
+  const taskScore=S.tasks.length?Math.round(S.tasks.filter(t=>t.done).length/S.tasks.length*100):50;
+  const disScore=Math.max(0,100-S.distraction.today*10);
+  return Math.round((habAvg+sleepScore+taskScore+disScore)/4);
+}
+function renderHealthWidget(){
+  const score=calcHealthScore();
+  const arc=$("health-arc"); if(!arc) return;
+  const circ=2*Math.PI*36, dash=(score/100)*circ;
+  arc.setAttribute("stroke-dasharray",`${dash} ${circ}`);
+  arc.setAttribute("stroke",AC());
+  const el=$("health-score-num"); if(el) el.textContent=NUMFMT(score);
+  const lv=$("health-level"); if(lv){
+    lv.textContent=score>=80?"ممتاز 🌟":score>=65?"جيد 👍":"تحتاج تحسين ⚠️";
+    lv.style.color=score>=80?"var(--green)":score>=65?AC():"var(--red)";
+  }
+  const factors=[
+    {l:"العادات",v:Math.round(S.habits.reduce((s,h)=>s+h.val,0)/S.habits.length),c:"var(--ac)"},
+    {l:"النوم",v:Math.min(100,Math.round(S.sleepLog.reduce((a,b)=>a+b,0)/S.sleepLog.length/8*100)),c:"var(--blue)"},
+    {l:"الإنتاجية",v:S.tasks.length?Math.round(S.tasks.filter(t=>t.done).length/S.tasks.length*100):50,c:"var(--green)"},
+    {l:"التركيز",v:Math.max(0,100-S.distraction.today*10),c:"var(--yellow)"},
+  ];
+  const fEl=$("health-factors"); if(!fEl) return;
+  fEl.innerHTML=factors.map(f=>`
+    <div style="margin-bottom:5px;display:flex;align-items:center;gap:6px;">
+      <span style="font-size:10px;color:var(--muted);width:55px;flex-shrink:0;">${f.l}</span>
+      <div style="flex:1;background:var(--border);border-radius:3px;height:4px;overflow:hidden;">
+        <div style="width:${f.v}%;height:100%;background:${f.c};border-radius:3px;transition:width .8s;"></div>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:${f.c};width:30px;text-align:left;">${NUMFMT(f.v)}%</span>
+    </div>`).join("");
+}
+
+/* ════════════════════════════════════════════════
+   HEATMAP
+════════════════════════════════════════════════ */
+function renderHeatmap(){
+  const el=$("heatmap"); if(!el) return;
+  const ac=AC();
+  el.innerHTML=S.heatmap.map((v,i)=>`
+    <div class="hcell" style="background:${ac};opacity:${v===0?0.08:0.15+v*0.12};"
+      onclick="incrementHeatmap(${i})" title="${["أح","إث","ث","أر","خ","ج","س"][i]}: ${v}h"></div>`).join("");
+  const total=S.heatmap.reduce((a,b)=>a+b,0);
+  const ht=$("hmap-total"); if(ht) ht.textContent=total+"h";
+}
+function incrementHeatmap(i){ S.heatmap[i]=(S.heatmap[i]+1)%9; save(); renderHeatmap(); }
+
+/* ════════════════════════════════════════════════
+   DEADLINES CHECK
+════════════════════════════════════════════════ */
+function checkDeadlines(){
+  S.tasks.filter(t=>!t.done&&t.deadline).forEach(t=>{
+    const d=new Date(t.deadline),diff=Math.round((d-TODAY)/(1000*60*60*24));
+    if(diff<=1&&diff>=0) notify(`⚠️ المهمة "${t.text}" موعدها ${diff===0?"اليوم":"غداً"}!`,"red","⏰");
+  });
+}
+
+/* ════════════════════════════════════════════════
+   ENERGY
+════════════════════════════════════════════════ */
+function renderEnergyBanner(){
+  const eb=$("energy-banner"); if(!eb) return;
+  const cfg={
+    high:{col:"var(--green)",icon:"⚡",msg:"طاقة عالية — الوقت المثالي للمهام المعقدة والكود الصعب!",tasks:S.tasks.filter(t=>!t.done&&t.priority==="high").slice(0,2)},
+    medium:{col:"var(--yellow)",icon:"🟡",msg:"طاقة متوسطة — ابدأ بمهام متوسطة ثم انتقل للصعبة",tasks:S.tasks.filter(t=>!t.done&&t.priority==="medium").slice(0,2)},
+    low:{col:"var(--red)",icon:"😴",msg:"طاقة منخفضة — ركّز على المهام البسيطة والتواصل فقط",tasks:S.tasks.filter(t=>!t.done&&t.priority==="low").slice(0,2)},
+  };
+  const c=cfg[S.energy];
+  eb.innerHTML=`<div style="background:${c.col}11;border:1px solid ${c.col}33;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:28px;">${c.icon}</span>
+    <div style="flex:1;">
+      <div style="font-size:12px;font-weight:800;color:${c.col};margin-bottom:2px;">مستوى الطاقة: ${S.energy==="high"?"عالية":S.energy==="medium"?"متوسطة":"منخفضة"}</div>
+      <div style="font-size:12px;color:var(--text);">${c.msg}</div>
+      ${c.tasks.length?`<div style="font-size:11px;color:var(--muted);margin-top:4px;">مقترح الآن: ${c.tasks.map(t=>t.text).join(" · ")}</div>`:""}
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('energy')">تغيير</button>
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════
+   TIMER
+════════════════════════════════════════════════ */
+function toggleTimer(){
+  timerRunning=!timerRunning;
+  const sb=$("sb-start-btn");
+  if(timerRunning){
+    if(sb) sb.textContent="⏸";
+    timerInterval=setInterval(()=>{
+      S.timerSec--;
+      if(S.timerSec<=0){
+        S.timerSec=0;timerRunning=false;clearInterval(timerInterval);
+        if(sb) sb.textContent="▶";
+        const mode=S.timerMode==="focus"?"focus":"break";
+        if(mode==="focus"){
+          S.heatmap[Math.floor(TODAY.getDay())]+=1;
+          notify("🎉 انتهى وقت التركيز! حان وقت الراحة","green","🎉");
+        } else notify("⚡ انتهت الراحة! وقت العمل","purple","⚡");
+        save();
+      }
+      updateTimerUI(); save();
+    },1000);
+  } else {
+    clearInterval(timerInterval);
+    if(sb) sb.textContent="▶";
+  }
+}
+function resetTimer(){ clearInterval(timerInterval);timerRunning=false;S.timerSec=S.timerMode==="focus"?25*60:5*60;save();updateTimerUI();const sb=$("sb-start-btn");if(sb)sb.textContent="▶"; }
+function switchTimerMode(){
+  S.timerMode=S.timerMode==="focus"?"break":"focus";
+  S.timerSec=S.timerMode==="focus"?25*60:5*60;
+  clearInterval(timerInterval);timerRunning=false;
+  const sb=$("sb-start-btn");if(sb)sb.textContent="▶";
+  const lb=$("sb-timer-lbl");if(lb)lb.textContent=S.timerMode==="focus"?"تركيز عميق":"استراحة";
+  const mb=$("sb-mode-btn");if(mb)mb.textContent=S.timerMode==="focus"?"راحة":"تركيز";
+  save();updateTimerUI();
+}
+function updateTimerUI(){
+  const d=`${String(Math.floor(S.timerSec/60)).padStart(2,"0")}:${String(S.timerSec%60).padStart(2,"0")}`;
+  const st=$("sb-timer");if(st)st.textContent=d;
+}
+
+/* ════════════════════════════════════════════════
+   DISTRACTION
+════════════════════════════════════════════════ */
+function addDistraction(){
+  S.distraction.today++;save();
+  const msgs=["حاول التركيز أكثر 💪","أغلق الإشعارات 🔕","ضع الهاتف جانباً 📵","حدد وقت للرد على الرسائل ⏰","جرّب تقنية Pomodoro ⏱"];
+  $("distraction-msg").textContent=msgs[Math.min(S.distraction.today-1,msgs.length-1)];
+  $("distraction-count").textContent=NUMFMT(S.distraction.today);
+  if(S.distraction.today>=5) notify("⚠️ لاحظنا انقطاعات كثيرة، جرّب إغلاق الإشعارات","red","⚠️");
+}
+function resetDistraction(){ S.distraction.today=0;save();$("distraction-count").textContent="0";$("distraction-msg").textContent="أداء ممتاز! لم تنقطع اليوم 🎯"; }
+
+/* ════════════════════════════════════════════════
+   DAILY REVIEW
+════════════════════════════════════════════════ */
+async function refreshDailyReview(){
+  const btn=$("review-refresh-btn");
+  if(btn){btn.textContent="⏳...";btn.disabled=true;}
+  const done=S.tasks.filter(t=>t.done).length,pending=S.tasks.filter(t=>!t.done).length;
+  const highPri=S.tasks.filter(t=>!t.done&&t.priority==="high").map(t=>t.text).join(", ")||"لا يوجد";
+  const projRisk=S.projects.filter(p=>p.status==="risk").map(p=>p.name).join(", ")||"لا يوجد";
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:`أنت مساعد إنتاجي شخصي. اكتب مراجعة يومية ذكية ومحفزة باللغة العربية بأسلوب مهني وودود. اجعلها جملتين أو ثلاث فقط.
+البيانات: المهام المكتملة ${done}، المعلقة ${pending}، الأولوية العالية: ${highPri}، مشاريع في خطر: ${projRisk}، مستوى الطاقة: ${S.energy}.
+اكتب الملخص مباشرة بدون مقدمة.`}]})
+    });
+    const d=await res.json();
+    const txt=d.content?.[0]?.text;
+    if(txt) $("daily-review-text").textContent=txt;
+  } catch(e){
+    $("daily-review-text").textContent=`لديك ${pending} مهام معلقة اليوم. ركّز على: ${highPri}. استمر!`;
+  }
+  if(btn){btn.textContent="🔄 تحديث";btn.disabled=false;}
+}
+
+/* ════════════════════════════════════════════════
+   PROJECTS
+════════════════════════════════════════════════ */
+function renderProjects(){
+  const pl=$("projects-list"); if(!pl) return;
+  const totalRev=S.projects.reduce((s,p)=>s+p.revenue,0);
+  const achieved=S.projects.reduce((s,p)=>s+Math.round(p.revenue*(p.pct/100)),0);
+  const riskP=S.projects.filter(p=>p.status==="risk").length;
+  const e1=$("proj-kpi1"),e2=$("proj-kpi2"),e3=$("proj-kpi3"),e4=$("proj-kpi4");
+  if(e1)e1.textContent=NUMFMT(S.projects.filter(p=>p.status==="active").length);
+  if(e2)e2.textContent=NUMFMT(riskP);
+  if(e3)e3.textContent=CURRFMT(totalRev);
+  if(e4)e4.textContent=CURRFMT(achieved);
+
+  pl.innerHTML=S.projects.map(p=>{
+    const pTasks=S.tasks.filter(t=>t.project===p.id);
+    const pDone=pTasks.filter(t=>t.done).length;
+    const daysLeft=Math.round((new Date(p.deadline)-TODAY)/(1000*60*60*24));
+    const statusConfig={active:["var(--green)","نشط"],risk:["var(--red)","في خطر"],done:["var(--muted)","مكتمل"]};
+    const [sc,sl]=statusConfig[p.status]||statusConfig.active;
+    return `<div class="card" style="margin-bottom:12px;border-color:${p.color}22;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:14px;height:14px;border-radius:50%;background:${p.color};flex-shrink:0;"></div>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:#fff;">${p.name}</div>
+            <div class="card-sub">${p.desc}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="badge" style="background:${sc}22;color:${sc};">${sl}</span>
+          ${daysLeft<=7&&daysLeft>=0?`<span class="badge badge-red">⚠️ ${daysLeft} أيام</span>`:""}
+          <button class="btn btn-ghost btn-sm" onclick="toggleProjectStatus(${p.id})">تغيير الحالة</button>
+          <button class="btn btn-red btn-sm" onclick="deleteProject(${p.id})" style="padding:5px 9px;">×</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;">
+        <div><div class="card-sub">نسبة الإنجاز</div><div style="font-size:20px;font-weight:900;color:${p.color};">${NUMFMT(p.pct)}%</div></div>
+        <div><div class="card-sub">الإيراد المتوقع</div><div style="font-size:16px;font-weight:700;color:var(--text);">${CURRFMT(p.revenue)}</div></div>
+        <div><div class="card-sub">الإيراد المحقق</div><div style="font-size:16px;font-weight:700;color:var(--green);">${CURRFMT(Math.round(p.revenue*(p.pct/100)))}</div></div>
+        <div><div class="card-sub">الموعد النهائي</div><div style="font-size:13px;font-weight:700;color:${daysLeft<=7?"var(--red)":"var(--text)"};">${p.deadline}</div></div>
+        <div><div class="card-sub">المهام</div><div style="font-size:16px;font-weight:700;color:var(--text);">${pDone}/${pTasks.length}</div></div>
+      </div>
+      <div class="progress" style="height:9px;">
+        <div class="progress-fill" style="background:${p.color};width:${p.pct}%;"></div>
+      </div>
+      ${daysLeft<=3&&daysLeft>=0?`<div style="background:var(--red)11;border:1px solid var(--red)33;border-radius:10px;padding:10px;margin-top:10px;font-size:12px;color:var(--red);">🚨 تحذير الانحراف: الموعد النهائي خلال ${daysLeft} أيام فقط! سرّع وتيرة العمل.</div>`:""}
+    </div>`;
+  }).join("");
+
+  // Revenue vs Completion bars
+  const rb=$("proj-rev-bars"); if(!rb) return;
+  rb.innerHTML=S.projects.map(p=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="width:130px;font-size:12px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+      <div style="flex:1;position:relative;">
+        <div style="background:var(--border);border-radius:4px;height:22px;overflow:hidden;position:relative;">
+          <div style="width:${p.pct}%;height:100%;background:${p.color}44;border-radius:4px;transition:width .8s;"></div>
+          <div style="width:${p.pct}%;height:4px;background:${p.color};border-radius:4px;position:absolute;bottom:0;transition:width .8s;"></div>
+        </div>
+      </div>
+      <div style="width:80px;text-align:left;font-size:12px;font-weight:800;color:${p.color};">${NUMFMT(p.pct)}%</div>
+      <div style="width:110px;text-align:left;font-size:11px;color:var(--green);">${CURRFMT(Math.round(p.revenue*(p.pct/100)))}</div>
+    </div>`).join("");
+}
+function toggleProjectStatus(id){
+  const statuses=["active","risk","done"];
+  S.projects=S.projects.map(p=>{
+    if(p.id===id){const i=statuses.indexOf(p.status);return {...p,status:statuses[(i+1)%statuses.length]};}
+    return p;
+  });
+  save();renderProjects();
+}
+function deleteProject(id){
+  if(confirm("هل تريد حذف هذا المشروع؟")){
+    S.projects=S.projects.filter(p=>p.id!==id);
+    S.tasks=S.tasks.map(t=>t.project===id?{...t,project:null}:t);
+    save();renderProjects();
+  }
+}
+
+/* ════════════════════════════════════════════════
+   FINANCE
+════════════════════════════════════════════════ */
+function renderFinance(){
+  // Debts
+  const td=S.debts.reduce((s,d)=>s+d.total,0),tp=S.debts.reduce((s,d)=>s+d.paid,0);
+  const pct=td?Math.round(tp/td*100):0;
+  const dtn=$("debt-total-num"),dpb=$("debt-pct-badge"),dmb=$("debt-main-bar");
+  if(dtn)dtn.textContent=CURRFMT(td-tp)+" متبقي";
+  if(dpb)dpb.textContent=pct+"% مسدّد";
+  if(dmb)dmb.style.width=pct+"%";
+  const dl=$("debts-list");
+  if(dl) dl.innerHTML=S.debts.map(d=>{
+    const p=Math.round(d.paid/d.total*100);
+    return `<div style="background:var(--card2);border-radius:12px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:13px;font-weight:700;">${d.label}</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="color:${d.color};font-weight:800;font-size:13px;">${NUMFMT(p)}%</span>
+          <button onclick="deleteDebt(${d.id})" style="background:none;border:none;cursor:pointer;color:var(--muted2);font-size:14px;">×</button>
+        </div>
+      </div>
+      <div class="progress" style="height:6px;margin-bottom:5px;">
+        <div class="progress-fill" style="background:${d.color};width:${p}%;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span class="card-sub">${CURRFMT(d.paid)} مسدّد</span>
+        <span class="card-sub">${CURRFMT(d.total)} إجمالي</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Revenue/Expense history bars
+  const maxR=Math.max(...S.revHistory,1);
+  const revEl=$("fin-rev"),expEl=$("fin-exp");
+  if(revEl)revEl.textContent=CURRFMT(S.revHistory[S.revHistory.length-1]);
+  if(expEl)expEl.textContent=CURRFMT(S.expHistory[S.expHistory.length-1]);
+  const rvb=$("fin-rev-bars");
+  if(rvb)rvb.innerHTML=`<div style="display:flex;align-items:flex-end;gap:4px;height:80px;">${S.revHistory.map((v,i)=>`<div style="flex:1;background:var(--green);border-radius:3px 3px 0 0;height:${Math.round((v/maxR)*78)}px;opacity:${0.4+i*0.1};"></div>`).join("")}</div>`;
+  const exb=$("fin-exp-bars");
+  const maxE=Math.max(...S.expHistory,1);
+  if(exb)exb.innerHTML=`<div style="display:flex;align-items:flex-end;gap:4px;height:80px;">${S.expHistory.map((v,i)=>`<div style="flex:1;background:var(--yellow);border-radius:3px 3px 0 0;height:${Math.round((v/maxE)*78)}px;opacity:${0.4+i*0.1};"></div>`).join("")}</div>`;
+
+  // Transactions
+  const tb=$("fin-table-body");
+  if(tb)tb.innerHTML=S.transactions.map(t=>`<tr>
+    <td><span class="badge ${t.type==="income"?"badge-green":"badge-red"}">${t.type==="income"?"دخل":"مصروف"}</span></td>
+    <td>${t.desc}</td>
+    <td style="color:${t.type==="income"?"var(--green)":"var(--red)"};font-weight:800;">${t.type==="income"?"+":"-"}${CURRFMT(t.amount)}</td>
+    <td style="color:var(--muted);">${t.date}</td>
+    <td><button onclick="deleteTx(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--muted2);">×</button></td>
+  </tr>`).join("");
+}
+function deleteDebt(id){S.debts=S.debts.filter(d=>d.id!==id);save();renderFinance();}
+function deleteTx(id){S.transactions=S.transactions.filter(t=>t.id!==id);save();renderFinance();}
+
+/* ════════════════════════════════════════════════
+   HABITS
+════════════════════════════════════════════════ */
+function renderHabits(){
+  const rg=$("habits-rings-grid"); if(!rg) return;
+  const ac=AC();
+  rg.innerHTML=S.habits.map(h=>{
+    const r=36,circ=2*Math.PI*r,dash=(h.val/100)*circ;
+    return `<div class="card card-sm" style="text-align:center;border-color:${h.color}22;">
+      <svg width="90" height="90" viewBox="0 0 90 90" style="overflow:visible;">
+        <circle cx="45" cy="45" r="${r}" fill="none" stroke="var(--border)" stroke-width="8"/>
+        <circle cx="45" cy="45" r="${r}" fill="none" stroke="${h.color}" stroke-width="8"
+          stroke-linecap="round" stroke-dasharray="${dash} ${circ}" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .8s;"/>
+        <text x="45" y="51" text-anchor="middle" fill="white" font-size="14" font-weight="800" font-family="Cairo,sans-serif">${NUMFMT(h.val)}%</text>
+      </svg>
+      <div style="font-size:13px;font-weight:800;color:#fff;margin:4px 0 2px;">${h.label}</div>
+      <div class="card-sub" style="margin-bottom:8px;">${h.target} ${h.unit} هدف</div>
+      <div style="display:flex;gap:4px;justify-content:center;">${h.history.map((v,i)=>`<div style="width:18px;height:18px;border-radius:4px;background:${v?h.color:"var(--border)"};cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;color:${v?"#fff":"var(--muted2)"};" onclick="toggleHabitDay(${h.id},${i})">${v?"✓":""}</div>`).join("")}</div>
+      <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;">
+        <button onclick="updateHabit(${h.id},-10)" class="btn btn-ghost btn-sm" style="padding:4px 8px;">-</button>
+        <button onclick="updateHabit(${h.id},10)" class="btn btn-sm" style="background:${h.color}22;color:${h.color};border:1px solid ${h.color}44;padding:4px 8px;">+</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Week grid
+  const wg=$("habits-week-grid"); if(!wg) return;
+  wg.innerHTML=S.habits.map(h=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="width:60px;font-size:11px;color:var(--muted);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.label}</div>
+      <div style="display:flex;gap:4px;flex:1;">${h.history.map((v,i)=>`<div style="flex:1;height:24px;border-radius:5px;background:${v?h.color:"var(--border)"};cursor:pointer;" onclick="toggleHabitDay(${h.id},${i})" title="${["أح","إث","ث","أر","خ","ج","س"][i]}"></div>`).join("")}</div>
+      <div style="font-size:11px;font-weight:700;color:${h.color};width:25px;">${h.history.filter(Boolean).length}/7</div>
+    </div>`).join("");
+
+  // H2 health
+  const score2=calcHealthScore();
+  const h2a=$("h2-arc");
+  if(h2a){const c=2*Math.PI*32,d=(score2/100)*c;h2a.setAttribute("stroke-dasharray",`${d} ${c}`);h2a.setAttribute("stroke",ac);}
+  const h2s=$("h2-score");if(h2s)h2s.textContent=NUMFMT(score2);
+  const h2b=$("h2-breakdown");
+  if(h2b){
+    const f=[{l:"عادات",v:Math.round(S.habits.reduce((s,h)=>s+h.val,0)/S.habits.length),c:ac},{l:"نوم",v:Math.min(100,Math.round(S.sleepLog.reduce((a,b)=>a+b,0)/S.sleepLog.length/8*100)),c:"var(--blue)"}];
+    h2b.innerHTML=f.map(x=>`<div style="margin-bottom:6px;"><div style="display:flex;justify-content:space-between;"><span style="font-size:10px;color:var(--muted);">${x.l}</span><span style="font-size:10px;color:${x.c};font-weight:800;">${x.v}%</span></div><div class="progress" style="height:5px;margin-top:2px;"><div class="progress-fill" style="background:${x.c};width:${x.v}%;"></div></div></div>`).join("");
+  }
+}
+function toggleHabitDay(hid,day){
+  S.habits=S.habits.map(h=>h.id===hid?{...h,history:h.history.map((v,i)=>i===day?1-v:v)}:h);
+  save();renderHabits();renderHealthWidget();
+}
+function updateHabit(id,delta){
+  S.habits=S.habits.map(h=>h.id===id?{...h,val:Math.min(100,Math.max(0,h.val+delta))}:h);
+  save();renderHabits();renderHealthWidget();
+}
+function logSleep(){
+  const v=parseFloat($("sleep-inp").value);
+  if(!isNaN(v)&&v>0&&v<=12){
+    S.sleepLog=[...S.sleepLog.slice(-6),v];
+    save();renderHabits();renderHealthWidget();
+    const avg=S.sleepLog.reduce((a,b)=>a+b,0)/S.sleepLog.length;
+    $("sleep-hours").textContent=v;
+    $("sleep-quality-bar").style.width=Math.min(100,Math.round(v/8*100))+"%";
+    notify(`✅ تم تسجيل ${v} ساعات نوم`,"green","😴");
+  }
+}
+
+/* ════════════════════════════════════════════════
+   GENERATE REPORT
+════════════════════════════════════════════════ */
+async function generateReport(){
+  const btn=$("gen-report-btn");
+  if(btn){btn.textContent="⏳ جارٍ التوليد...";btn.disabled=true;}
+  gotoPage("report",null);
+  const done=S.tasks.filter(t=>t.done).length,pending=S.tasks.filter(t=>!t.done).length;
+  const habAvg=Math.round(S.habits.reduce((s,h)=>s+h.val,0)/S.habits.length);
+  const proj=S.projects.map(p=>`${p.name}: ${p.pct}%`).join(", ");
+  const rev=S.revHistory[S.revHistory.length-1],exp=S.expHistory[S.expHistory.length-1];
+  const sleepAvg=Math.round(S.sleepLog.reduce((a,b)=>a+b,0)/S.sleepLog.length*10)/10;
+  const score=calcHealthScore();
+  const rcEl=$("report-content");
+  if(rcEl) rcEl.innerHTML=`<div class="card" style="text-align:center;padding:30px;"><div style="font-size:40px;animation:spin 1s linear infinite;display:inline-block;">⟳</div><div style="margin-top:10px;color:var(--muted);">يتم توليد تقريرك الشخصي بالذكاء الاصطناعي...</div></div>`;
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:`أنت مستشار إنتاجية شخصي. اكتب تقرير أسبوعي شامل باللغة العربية بالأقسام التالية (استخدم هذا التنسيق بالضبط):
+[ملخص]: جملتان عن الأسبوع
+[الإنجازات]: 3 نقاط إيجابية
+[التحديات]: 2 نقاط تحتاج تحسين
+[التوصيات]: 3 توصيات عملية للأسبوع القادم
+[الدرجة]: رقم من 100 فقط
+
+البيانات: مهام مكتملة ${done} من ${done+pending}، مشاريع: ${proj}، إيرادات ${rev} مقابل مصاريف ${exp}، متوسط العادات ${habAvg}%، متوسط النوم ${sleepAvg}ساعة، درجة الصحة ${score}/100، انقطاعات ${S.distraction.today}.`}]})
+    });
+    const d=await res.json();
+    const txt=d.content?.[0]?.text||"";
+    const sections={"ملخص":"","الإنجازات":"","التحديات":"","التوصيات":"","الدرجة":""};
+    let current="";
+    txt.split("\n").forEach(line=>{
+      const match=Object.keys(sections).find(k=>line.includes(`[${k}]`));
+      if(match)current=match;
+      else if(current)sections[current]+=line+"\n";
+    });
+    const scoreNum=parseInt(sections["الدرجة"])||score;
+    if(rcEl) rcEl.innerHTML=`
+      <div class="bento bento-4col" style="margin-bottom:14px;">
+        ${[
+          {icon:"📋",label:"الملخص",val:"تم"},
+          {icon:"🏆",label:"الإنجازات",val:"3 نقاط"},
+          {icon:"⚠️",label:"التحديات",val:"2 نقاط"},
+          {icon:"⭐",label:"درجتك",val:scoreNum+"/100"},
+        ].map(k=>`<div class="card card-sm" style="text-align:center;"><div style="font-size:28px;margin-bottom:6px;">${k.icon}</div><div style="font-size:18px;font-weight:900;color:${AC()};">${k.val}</div><div class="card-sub">${k.label}</div></div>`).join("")}
+      </div>
+      <div class="bento bento-2col">
+        ${Object.entries(sections).filter(([k])=>k!=="الدرجة").map(([k,v])=>`
+          <div class="report-section">
+            <div class="report-title">${{ملخص:"📋 الملخص الأسبوعي",الإنجازات:"🏆 الإنجازات",التحديات:"⚠️ التحديات",التوصيات:"💡 التوصيات"}[k]||k}</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.8;white-space:pre-line;">${v.trim()||"—"}</div>
+          </div>`).join("")}
+      </div>`;
+    notify("✅ تم توليد التقرير بنجاح","green","📊");
+  } catch(e){
+    if(rcEl) rcEl.innerHTML=`<div class="card" style="padding:20px;">
+      <div style="font-size:16px;font-weight:800;margin-bottom:12px;">تقرير الأسبوع</div>
+      <div class="report-section"><div class="report-title">الإنجازات</div><div style="font-size:13px;color:var(--text);">أكملت ${done} مهمة هذا الأسبوع. مشاريعك تسير بوتيرة جيدة.</div></div>
+      <div class="report-section"><div class="report-title">التوصيات</div><div style="font-size:13px;color:var(--text);">ركّز على إكمال المهام ذات الأولوية العالية وتحسين جودة النوم.</div></div>
+    </div>`;
+  }
+  if(btn){btn.textContent="✨ توليد تقرير AI";btn.disabled=false;}
+}
+
+function exportReport(){
+  const content=($("report-content")||{}).innerText||"لا يوجد تقرير";
+  const blob=new Blob([content],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="weekly-report-ali.txt";
+  a.click();
+}
+
+/* ════════════════════════════════════════════════
+   MODALS
+════════════════════════════════════════════════ */
+function openModal(type, data={}) {
+  const mb=$("modal-body");
+  const templates={
+    "add-task":`
+      <div class="modal-title">إضافة مهمة جديدة</div>
+      <div class="form-group"><label class="form-label">نص المهمة</label><input class="inp" id="m-task-text" placeholder="وصف المهمة..."></div>
+      <div class="form-group"><label class="form-label">النوع</label><select class="inp" id="m-task-type"><option value="work">عمل</option><option value="personal">شخصي</option><option value="habit">عادة</option></select></div>
+      <div class="form-group"><label class="form-label">الأولوية</label><select class="inp" id="m-task-priority"><option value="high">عالي 🔴</option><option value="medium">متوسط 🟡</option><option value="low">منخفض 🟢</option></select></div>
+      <div class="form-group"><label class="form-label">المشروع</label><select class="inp" id="m-task-proj"><option value="">بدون مشروع</option>${S.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join("")}</select></div>
+      <div class="form-group"><label class="form-label">الموعد النهائي</label><input class="inp" type="date" id="m-task-deadline" value="${new Date().toISOString().split('T')[0]}"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveTask()">حفظ المهمة</button>
+      </div>`,
+    "add-project":`
+      <div class="modal-title">إضافة مشروع جديد</div>
+      <div class="form-group"><label class="form-label">اسم المشروع</label><input class="inp" id="m-proj-name" placeholder="اسم المشروع..."></div>
+      <div class="form-group"><label class="form-label">الوصف</label><input class="inp" id="m-proj-desc" placeholder="وصف مختصر..."></div>
+      <div class="form-group"><label class="form-label">الإيراد المتوقع (ر.س)</label><input class="inp" type="number" id="m-proj-rev" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">الموعد النهائي</label><input class="inp" type="date" id="m-proj-deadline"></div>
+      <div class="form-group"><label class="form-label">اللون</label><select class="inp" id="m-proj-color"><option value="#a78bfa">بنفسجي</option><option value="#34d399">أخضر</option><option value="#fbbf24">ذهبي</option><option value="#f472b6">وردي</option><option value="#60a5fa">أزرق</option><option value="#fb923c">برتقالي</option></select></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveProject()">إضافة المشروع</button>
+      </div>`,
+    "add-debt":`
+      <div class="modal-title">إضافة دين أو إيراد</div>
+      <div class="form-group"><label class="form-label">النوع</label><select class="inp" id="m-fin-type"><option value="debt">دين</option><option value="income">إيراد</option><option value="expense">مصروف</option></select></div>
+      <div class="form-group"><label class="form-label">الوصف</label><input class="inp" id="m-fin-desc" placeholder="وصف..."></div>
+      <div class="form-group"><label class="form-label">المبلغ الإجمالي</label><input class="inp" type="number" id="m-fin-total" placeholder="0"></div>
+      <div class="form-group" id="m-paid-group"><label class="form-label">المبلغ المسدّد</label><input class="inp" type="number" id="m-fin-paid" placeholder="0"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveFinance()">حفظ</button>
+      </div>`,
+    "add-event":`
+      <div class="modal-title">إضافة حدث في اليوم ${data.day||"—"}</div>
+      <div class="form-group"><label class="form-label">اسم الحدث</label><input class="inp" id="m-ev-name" placeholder="اسم الحدث..."></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveEvent(${data.day||0})">إضافة</button>
+      </div>`,
+    "add-habit":`
+      <div class="modal-title">إضافة عادة جديدة</div>
+      <div class="form-group"><label class="form-label">اسم العادة</label><input class="inp" id="m-hab-name" placeholder="مثال: التمرين، القراءة..."></div>
+      <div class="form-group"><label class="form-label">الهدف اليومي</label><input class="inp" type="number" id="m-hab-target" placeholder="30"></div>
+      <div class="form-group"><label class="form-label">الوحدة</label><input class="inp" id="m-hab-unit" placeholder="دقيقة / كوب / صفحة..."></div>
+      <div class="form-group"><label class="form-label">اللون</label><select class="inp" id="m-hab-color"><option value="#a78bfa">بنفسجي</option><option value="#34d399">أخضر</option><option value="#fbbf24">ذهبي</option><option value="#f472b6">وردي</option><option value="#60a5fa">أزرق</option><option value="#fb923c">برتقالي</option></select></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveHabit()">إضافة العادة</button>
+      </div>`,
+    "add-transaction":`
+      <div class="modal-title">إضافة معاملة مالية</div>
+      <div class="form-group"><label class="form-label">النوع</label><select class="inp" id="m-tx-type"><option value="income">دخل</option><option value="expense">مصروف</option></select></div>
+      <div class="form-group"><label class="form-label">الوصف</label><input class="inp" id="m-tx-desc" placeholder="وصف المعاملة..."></div>
+      <div class="form-group"><label class="form-label">المبلغ</label><input class="inp" type="number" id="m-tx-amount" placeholder="0"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveTx()">حفظ</button>
+      </div>`,
+    "energy":`
+      <div class="modal-title">⚡ مستوى طاقتك الآن</div>
+      <div class="card-sub" style="margin-bottom:14px;">سيقترح لك النظام مهاماً تناسب مستواك</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${[
+          {v:"high",icon:"⚡",label:"طاقة عالية",desc:"للمهام المعقدة والكود والتفكير العميق",col:"var(--green)"},
+          {v:"medium",icon:"🟡",label:"طاقة متوسطة",desc:"للاجتماعات والمراجعات والتواصل",col:"var(--yellow)"},
+          {v:"low",icon:"😴",label:"طاقة منخفضة",desc:"للمهام البسيطة والردود فقط",col:"var(--red)"},
+        ].map(e=>`<button onclick="setEnergy('${e.v}')" class="energy-btn ${S.energy===e.v?"selected":""}" style="border-color:${S.energy===e.v?e.col:"var(--border)"};text-align:right;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:22px;">${e.icon}</span>
+            <div><div style="font-size:13px;font-weight:800;color:${e.col};">${e.label}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">${e.desc}</div></div>
+          </div>
+        </button>`).join("")}
+      </div>
+      <div style="text-align:left;margin-top:14px;"><button class="btn btn-ghost" onclick="closeModal()">إغلاق</button></div>`,
+  };
+  if(mb) mb.innerHTML=templates[type]||`<div class="modal-title">غير متاح</div>`;
+  $("modal-overlay").classList.add("open");
+}
+function closeModal(e){ if(!e||e.target===$("modal-overlay")) $("modal-overlay").classList.remove("open"); }
+
+function saveTask(){
+  const txt=$("m-task-text")?.value?.trim();
+  if(!txt) return notify("أدخل نص المهمة","red","⚠️");
+  const id=Math.max(...S.tasks.map(t=>t.id),0)+1;
+  S.tasks.push({id,text:txt,done:false,type:$("m-task-type")?.value||"work",priority:$("m-task-priority")?.value||"medium",project:parseInt($("m-task-proj")?.value)||null,deadline:$("m-task-deadline")?.value||""});
+  save();closeModal();renderAll();notify("تمت إضافة المهمة","green","✅");
+}
+function saveProject(){
+  const name=$("m-proj-name")?.value?.trim();
+  if(!name) return notify("أدخل اسم المشروع","red","⚠️");
+  const id=Math.max(...S.projects.map(p=>p.id),0)+1;
+  S.projects.push({id,name,desc:$("m-proj-desc")?.value||"",revenue:parseInt($("m-proj-rev")?.value)||0,deadline:$("m-proj-deadline")?.value||"",color:$("m-proj-color")?.value||"#a78bfa",pct:0,status:"active"});
+  save();closeModal();renderAll();notify("تمت إضافة المشروع","green","🚀");
+}
+function saveFinance(){
+  const type=$("m-fin-type")?.value;
+  const desc=$("m-fin-desc")?.value?.trim();
+  const total=parseInt($("m-fin-total")?.value)||0;
+  if(!desc||!total) return notify("يرجى ملء جميع الحقول","red","⚠️");
+  if(type==="debt"){
+    const id=Math.max(...S.debts.map(d=>d.id),0)+1;
+    S.debts.push({id,label:desc,total,paid:parseInt($("m-fin-paid")?.value)||0,color:"#a78bfa"});
+  } else {
+    const id=Math.max(...S.transactions.map(t=>t.id),0)+1;
+    S.transactions.unshift({id,type:type==="income"?"income":"expense",desc,amount:total,date:new Date().toISOString().split("T")[0]});
+    if(type==="income") S.revHistory=[...S.revHistory.slice(-5),S.revHistory[S.revHistory.length-1]+total];
+    else S.expHistory=[...S.expHistory.slice(-5),S.expHistory[S.expHistory.length-1]+total];
+  }
+  save();closeModal();renderFinance();notify("تمت الإضافة","green","💰");
+}
+function saveEvent(day){
+  const name=$("m-ev-name")?.value?.trim();
+  if(!name) return;
+  if(!S.events[day]) S.events[day]=[];
+  S.events[day].push(name);
+  save();closeModal();buildCal();notify("تمت إضافة الحدث","green","📅");
+}
+function saveHabit(){
+  const name=$("m-hab-name")?.value?.trim();
+  if(!name) return notify("أدخل اسم العادة","red","⚠️");
+  const id=Math.max(...S.habits.map(h=>h.id),0)+1;
+  S.habits.push({id,label:name,color:$("m-hab-color")?.value||"#a78bfa",val:0,target:parseInt($("m-hab-target")?.value)||30,unit:$("m-hab-unit")?.value||"دقيقة",history:[0,0,0,0,0,0,0]});
+  save();closeModal();renderHabits();notify("تمت إضافة العادة","green","🔥");
+}
+function saveTx(){
+  const id=Math.max(...S.transactions.map(t=>t.id),0)+1;
+  const amt=parseInt($("m-tx-amount")?.value)||0;
+  const type=$("m-tx-type")?.value||"income";
+  const desc=$("m-tx-desc")?.value?.trim();
+  if(!desc||!amt) return notify("يرجى ملء الحقول","red","⚠️");
+  S.transactions.unshift({id,type,desc,amount:amt,date:new Date().toISOString().split("T")[0]});
+  if(type==="income") S.revHistory=[...S.revHistory.slice(-5),S.revHistory[S.revHistory.length-1]+amt];
+  else S.expHistory=[...S.expHistory.slice(-5),S.expHistory[S.expHistory.length-1]+amt];
+  save();closeModal();renderFinance();notify("تمت الإضافة","green","💰");
+}
+function setEnergy(v){
+  S.energy=v;save();closeModal();renderEnergyBanner();renderSidebar();
+  notify({high:"⚡ طاقة عالية! وقت الإنجاز",medium:"🟡 طاقة متوسطة، نفّذ بهدوء",low:"😴 طاقة منخفضة، خذ قسطاً من الراحة"}[v],"purple");
+}
+
+/* ════════════════════════════════════════════════
+   OVERVIEW PAGE
+════════════════════════════════════════════════ */
+function renderOverview(){
+  const ic=S.isCommercial;
+  // KPI
+  const done=S.tasks.filter(t=>t.done).length;
+  const e1=$("ov-num1"),e2=$("ov-num2");
+  if(e1)e1.textContent=ic?NUMFMT("79,675"):NUMFMT(done);
+  if(e2)e2.textContent=ic?NUMFMT("312"):NUMFMT(S.projects.length);
+  const l1=$("ov-lbl1"),l2=$("ov-lbl2");
+  if(l1)l1.textContent=ic?"هذا الشهر":"مهام مكتملة";
+  if(l2)l2.textContent=ic?"اشتراك يومي":"مشاريع نشطة";
+  // quick tasks
+  const qtl=$("ov-task-list");
+  if(qtl) qtl.innerHTML=S.tasks.slice(0,5).map(t=>taskHTML(t)).join("");
+  drawSparkline();
+  drawMainBars();
+  buildCal();
+  renderMatrix();
+  renderHealthWidget();
+  renderHeatmap();
+}
+
+/* ════════════════════════════════════════════════
+   TASKS PAGE
+════════════════════════════════════════════════ */
+function renderTasks(){
+  let tasks=S.tasks;
+  const f=S.taskFilter;
+  if(f==="work") tasks=tasks.filter(t=>t.type==="work");
+  else if(f==="personal") tasks=tasks.filter(t=>t.type==="personal");
+  else if(f==="habit") tasks=tasks.filter(t=>t.type==="habit");
+  else if(f==="high") tasks=tasks.filter(t=>t.priority==="high");
+  else if(f==="done") tasks=tasks.filter(t=>t.done);
+  const pending=tasks.filter(t=>!t.done),done=tasks.filter(t=>t.done);
+  const pl=$("tasks-pending-list"),dl=$("tasks-done-list");
+  if(pl)pl.innerHTML=pending.map(t=>taskHTML(t)).join("")||`<div style="text-align:center;padding:20px;color:var(--muted);">🎉 لا توجد مهام معلقة!</div>`;
+  if(dl)dl.innerHTML=done.map(t=>taskHTML(t)).join("")||`<div style="text-align:center;padding:20px;color:var(--muted);">لا توجد مهام مكتملة بعد</div>`;
+  const c1=$("tasks-col1-count"),c2=$("tasks-col2-count");
+  if(c1)c1.textContent=pending.length+" مهمة";
+  if(c2)c2.textContent=done.length+" مهمة";
+  const dc=$("distraction-count"),da=$("distraction-avg");
+  if(dc)dc.textContent=NUMFMT(S.distraction.today);
+  if(da)da.textContent=NUMFMT(+(S.distraction.week.reduce((a,b)=>a+b,0)/7).toFixed(1));
+  renderEnergyBanner();
+}
+
+/* ════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+function init(){
+  updateTimerUI();
+  renderOverview();
+  renderSidebar();
+  checkDeadlines();
+  setTimeout(()=>{
+    if(S.projects.some(p=>{const d=new Date(p.deadline);return (d-TODAY)/(1000*60*60*24)<=3&&p.status==="risk";}))
+      notify("⚠️ لديك مشروع في خطر تأخر!","red","🚨");
+  },1500);
+}
+init();
+</script>
+</body>
+</html>
