@@ -365,8 +365,8 @@ body{
 <div id="header">
   <div class="logo">عـلي<em>OS</em></div>
   <div class="header-controls">
-    <button class="btn-icon" id="theme-btn" onclick="toggleTheme()" title="تبديل الوضع">🌙</button>
-    <button class="btn-icon" onclick="openModal()" title="إضافة ويدجت">➕</button>
+    <button class="btn-icon" id="theme-btn" title="تبديل الوضع">🌙</button>
+    <button class="btn-icon" id="add-modal-btn" title="إضافة ويدجت">➕</button>
   </div>
 </div>
 
@@ -383,13 +383,13 @@ body{
 </div>
 
 <!-- MODAL -->
-<div id="modal" onclick="closeModal(event)">
-  <div class="modal-content" onclick="event.stopPropagation()">
+<div id="modal">
+  <div class="modal-content">
     <div class="modal-title">إضافة ويدجت جديد</div>
-    <form onsubmit="addWidget(event)">
+    <form id="widget-form">
       <div class="form-group">
         <label class="form-label">النوع</label>
-        <select class="form-input" id="type-select" onchange="updatePreview()">
+        <select class="form-input" id="type-select">
           <option value="text">نص بسيط</option>
           <option value="number">رقم</option>
           <option value="checklist">قائمة مهام</option>
@@ -413,7 +413,7 @@ body{
       </div>
 
       <div class="form-buttons">
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+        <button type="button" class="btn btn-secondary" id="cancel-btn">إلغاء</button>
         <button type="submit" class="btn btn-primary">إضافة ويدجت</button>
       </div>
     </form>
@@ -458,11 +458,22 @@ function render(){
 // Render templates
 function renderTemplates(){
   const html = TEMPLATES.map(t => `
-    <div class="widget-template" onclick="addQuickWidget('${t.type}', '${t.icon}', '${t.title}')">
+    <button class="widget-template" data-type="${t.type}" data-icon="${t.icon}" data-title="${t.title}">
       ${t.icon} ${t.title}
-    </div>
+    </button>
   `).join('');
   document.getElementById('templates').innerHTML = html;
+  
+  // Attach event listeners to template buttons
+  document.querySelectorAll('.widget-template').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const type = this.dataset.type;
+      const icon = this.dataset.icon;
+      const title = this.dataset.title;
+      addQuickWidget(type, icon, title);
+    });
+  });
 }
 
 // Add quick widget
@@ -490,8 +501,7 @@ function openModal(){
 }
 
 // Close modal
-function closeModal(e){
-  if(e && e.target.id !== 'modal') return;
+function closeModal(){
   document.getElementById('modal').classList.remove('open');
 }
 
@@ -551,7 +561,7 @@ function renderWidgets(){
     }
     else if(w.type === 'checklist'){
       const items = w.items.map((item, i) => `
-        <div style="display:flex;gap:8px;margin-bottom:6px;cursor:pointer;" onclick="toggleItem(${w.id}, ${i})">
+        <div style="display:flex;gap:8px;margin-bottom:6px;cursor:pointer;align-items:center;" data-widget-id="${w.id}" data-item-index="${i}" class="checklist-item">
           <input type="checkbox" ${item.done ? 'checked' : ''} style="cursor:pointer;">
           <span style="text-decoration:${item.done ? 'line-through' : 'none'};opacity:${item.done ? 0.5 : 1};">${item.text}</span>
         </div>
@@ -569,7 +579,7 @@ function renderWidgets(){
             <div style="font-size:24px;margin-bottom:6px;">${w.icon}</div>
             <div class="widget-title">${w.title}</div>
           </div>
-          <button class="widget-remove" onclick="removeWidget(${w.id})">✕</button>
+          <button class="widget-remove" data-widget-id="${w.id}">✕</button>
         </div>
         ${content}
       </div>
@@ -577,6 +587,24 @@ function renderWidgets(){
   }).join('');
 
   document.getElementById('widgets-grid').innerHTML = html || '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">لا توجد ويدجتات. أضف واحدة الآن!</div>';
+  
+  // Attach event listeners to remove buttons
+  document.querySelectorAll('.widget-remove').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      removeWidget(parseInt(this.dataset.widgetId));
+    });
+  });
+  
+  // Attach event listeners to checklist items
+  document.querySelectorAll('.checklist-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      const widgetId = parseInt(this.dataset.widgetId);
+      const itemIndex = parseInt(this.dataset.itemIndex);
+      toggleItem(widgetId, itemIndex);
+    });
+  });
 }
 
 // Theme toggle
@@ -593,6 +621,15 @@ if(localStorage.getItem('lightMode') === 'true'){
   document.body.classList.add('light-mode');
   document.getElementById('theme-btn').textContent = '☀️';
 }
+
+// Event listeners setup
+document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+document.getElementById('add-modal-btn').addEventListener('click', openModal);
+document.getElementById('cancel-btn').addEventListener('click', closeModal);
+document.getElementById('widget-form').addEventListener('submit', addWidget);
+document.getElementById('modal').addEventListener('click', function(e) {
+  if(e.target === this) closeModal();
+});
 
 // Init
 loadData();
